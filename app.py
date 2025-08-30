@@ -1,6 +1,6 @@
 # To run this code, save it as app.py and execute the following commands in order:
 # 1. pip cache purge
-# 2. pip install streamlit fastapi uvicorn aiohttp pydantic langchain-google-genai gtts --no-cache-dir
+# 2. pip install streamlit fastapi uvicorn aiohttp pydantic langchain-google-genai gtts langchain-community chromadb --no-cache-dir
 # 3. streamlit run app.py
 
 import streamlit as st
@@ -11,18 +11,26 @@ import asyncio
 from io import BytesIO
 from gtts import gTTS
 from langchain_community.document_loaders import TextLoader
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma  # Correct import
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains import RetrievalQA
 
 # --- CONFIGURATION ---
-# IMPORTANT: This now securely retrieves the Gemini API key from your environment.
-# You MUST set the GEMINI_API_KEY environment variable on your system for this to work.
-# Alternatively, you can use st.secrets for Streamlit Cloud.
-# GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-GEMINI_API_KEY = "AIzaSyCZsQMNUsIPP0YrtAeYVnjB7hsrFvobL9k"
+# IMPORTANT: This retrieves the Gemini API key from st.secrets if running on Streamlit Cloud,
+# or from environment variables for local development. This is the recommended secure approach.
+try:
+    # This is for deployment on Streamlit Cloud
+    GEMINI_API_KEY = st.secrets["AIzaSyCZsQMNUsIPP0YrtAeYVnjB7hsrFvobL9k"]
+except KeyError:
+    # This is for local development
+    GEMINI_API_KEY = "AIzaSyCZsQMNUsIPP0YrtAeYVnjB7hsrFvobL9k"
+
+if not GEMINI_API_KEY:
+    st.error("Gemini API key not found. Please set it in st.secrets or as an environment variable.")
+    st.stop()
+
 
 # The model for text generation and embeddings.
 LLM_MODEL = "gemini-2.5-flash"
@@ -53,8 +61,9 @@ def setup_rag_pipeline():
     """
     print("Setting up RAG pipeline...")
     try:
-        if not GEMINI_API_KEY or GEMINI_API_KEY == "YOUR_GEMINI_API_KEY":
-            st.error("Please set the GEMINI_API_KEY environment variable or replace the placeholder in the code.")
+        # Check if the API key is available
+        if not GEMINI_API_KEY:
+            st.error("Please set the GEMINI_API_KEY environment variable or in st.secrets.")
             return None
 
         loader = TextLoader(KNOWLEDGE_FILE)
