@@ -1,0 +1,9 @@
+streamlit
+fastapi
+uvicorn
+aiohttp
+pydantic
+langchain-google-genai
+gtts
+langchain-community
+chromadb
