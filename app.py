@@ -508,5 +508,5 @@ async def handle_query(request: QueryRequest):
     return response_data
 
 # --- START THE SERVER ---
-if __name__ == "_main_":
+if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
