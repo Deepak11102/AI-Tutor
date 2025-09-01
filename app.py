@@ -1,8 +1,4 @@
-# To run this code, save it as app.py and execute the following commands in order:
-# 1. pip uninstall uvicorn -y
-# 2. pip cache purge
-# 3. pip install fastapi uvicorn aiohttp pydantic langchain-google-genai gtts --no-cache-dir
-# 4. python app.py
+# Importing Dependencies
 
 import uvicorn
 import os
@@ -45,9 +41,7 @@ app = FastAPI(
 )
 
 # --- CONFIGURATION ---
-# IMPORTANT: This now securely retrieves the Gemini API key from your environment.
-# You MUST set the GEMINI_API_KEY environment variable on your system for this to work.
-GEMINI_API_KEY = "AIzaSyCZsQMNUsIPP0YrtAeYVnjB7hsrFvobL9k"
+GEMINI_API_KEY = "AIzaSyDxGeXskRZYLGMv6w8Uhb-v9gyL3BMplwE"
 
 # The model for text generation and embeddings.
 LLM_MODEL = "gemini-2.5-flash"
@@ -78,7 +72,6 @@ async def setup_rag_pipeline():
     """
     print("Setting up RAG pipeline...")
     try:
-        # Check if the API key is available before proceeding.
         if not GEMINI_API_KEY:
             print("WARNING: Gemini API key is not set as an environment variable. RAG pipeline cannot be initialized.")
             return None
@@ -91,13 +84,13 @@ async def setup_rag_pipeline():
         text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         docs = text_splitter.split_documents(documents)
 
-        # Use Gemini's embedding model
+        # Using Gemini's embedding model
         embedding_function = GoogleGenerativeAIEmbeddings(
             model=EMBEDDING_MODEL,
             google_api_key=GEMINI_API_KEY
         )
         
-        # Create an in-memory vector store from the documents
+        # Creating an in-memory vector store from the documents
         vectorstore = Chroma.from_documents(docs, embedding_function)
 
         # Initialize the LLM with the Gemini model
@@ -106,7 +99,7 @@ async def setup_rag_pipeline():
             google_api_key=GEMINI_API_KEY
         )
 
-        # Create the RetrievalQA chain
+        # Creating the RetrievalQA chain
         qa_chain = RetrievalQA.from_chain_type(
             llm=llm,
             chain_type="stuff",
@@ -491,7 +484,7 @@ async def handle_query(request: QueryRequest):
     EMOTIONS = ["happy", "explaining", "calm", "curious"]
     emotion_state = random.choice(EMOTIONS)
     
-    # Generate audio using the TTS function
+    # Generating audio using the TTS function
     try:
         audio_base64 = await tts_api(answer_text)
     except Exception as e:
@@ -510,3 +503,4 @@ async def handle_query(request: QueryRequest):
 # --- START THE SERVER ---
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
