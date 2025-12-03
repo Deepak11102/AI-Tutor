@@ -40,12 +40,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# --- CONFIGURATION ---
-GEMINI_API_KEY = "AIzaSyDxGeXskRZYLGMv6w8Uhb-v9gyL3BMplwE"
+import os
 
-# The model for text generation and embeddings.
-LLM_MODEL = "gemini-2.5-flash"
-EMBEDDING_MODEL = "gemini-embedding-001"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
 
 # A simple knowledge base file for the RAG pipeline.
 KNOWLEDGE_FILE = "knowledge.txt"
@@ -503,4 +502,5 @@ async def handle_query(request: QueryRequest):
 # --- START THE SERVER ---
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
 
