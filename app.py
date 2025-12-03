@@ -15,7 +15,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.text_splitter import CharacterTextSplitter
+from langchain_text_splitters import CharacterTextSplitter
 from langchain.chains import RetrievalQA
 from contextlib import asynccontextmanager
 
@@ -502,5 +502,6 @@ async def handle_query(request: QueryRequest):
 # --- START THE SERVER ---
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
 
 
